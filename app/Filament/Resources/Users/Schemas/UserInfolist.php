@@ -12,6 +12,14 @@ class UserInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
+                TextEntry::make('role')
+                ->label('Role')
+                ->disabled()
+                ->getStateUsing(
+                    fn($record)=> str($record->getRoleNames()->first() ?? 'User')
+                    ->replace('_', ' ')
+                    ->title()
+                ),
                 TextEntry::make('email')
                     ->label('Email address'),
                 TextEntry::make('email_verified_at')
