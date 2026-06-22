@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Posts\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -16,9 +17,26 @@ class PostsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
+                // TextColumn::make('user_id')
+                //     ->numeric()
+                //     ->sortable(),
+                TextColumn::make('author.name')
+                    ->label('Author')
+                    ->sortable()
+                    ->searchable()
+                    ->color('warning'),
+                TextColumn::make('author_role')
+                    ->label('Author role')
+                    ->getStateUsing(
+                        fn($record) =>
+                        str(
+                            $record->author?->getRoleNames()->first() ?? 'User'
+                        )->replace('_', ' ')->title()
+                    )
+                    ->badge()
+                    ->color('success')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('title')
                     ->searchable(),
                 IconColumn::make('is_published')
@@ -38,6 +56,7 @@ class PostsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

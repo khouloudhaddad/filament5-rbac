@@ -12,11 +12,13 @@ class PostInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('user_id')
-                    ->numeric(),
+                // TextEntry::make('user_id')
+                //     ->numeric(),
                 TextEntry::make('title'),
                 TextEntry::make('content')
                     ->columnSpanFull(),
+                TextEntry::make('author.name')
+                    ->label('Author'),
                 IconEntry::make('is_published')
                     ->boolean(),
                 TextEntry::make('created_at')

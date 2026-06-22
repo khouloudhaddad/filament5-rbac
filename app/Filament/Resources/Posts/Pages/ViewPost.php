@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Posts\Pages;
 
 use App\Filament\Resources\Posts\PostResource;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -13,6 +14,11 @@ class ViewPost extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('back')
+            ->label('Back')
+            ->url(PostResource::getUrl('index'))
+            ->color('success')
+            ->icon('heroicon-o-arrow-left'),
             EditAction::make(),
         ];
     }

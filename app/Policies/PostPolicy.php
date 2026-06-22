@@ -11,7 +11,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class PostPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:Post');
@@ -19,6 +19,12 @@ class PostPolicy
 
     public function view(AuthUser $authUser, Post $post): bool
     {
+        // Authors are allowed to only view their posts
+        if ($authUser->hasRole('author')) {
+            return $authUser->can('View:Post') && $post->user_id === $authUser->id;
+        }
+
+        // Super admin  & editor can view all posts
         return $authUser->can('View:Post');
     }
 
@@ -29,11 +35,22 @@ class PostPolicy
 
     public function update(AuthUser $authUser, Post $post): bool
     {
-        return $authUser->can('Update:Post');
+        if ($authUser->hasRole ('author') && $authUser->id === $post->user_id) {
+            return $authUser->can('Update:Post');
+        }
+
+        if ($authUser->hasRole('editor') || $authUser->hasRole('super_admin')){
+            return $authUser->can('Update:Post');
+        }
+
+        return false;
     }
 
     public function delete(AuthUser $authUser, Post $post): bool
     {
+         if ($authUser->hasRole('author')) {
+            return $authUser->can('Delete:Post') && $authUser->id === $post->user_id;
+        }
         return $authUser->can('Delete:Post');
     }
 
@@ -76,5 +93,4 @@ class PostPolicy
     {
         return $authUser->can('Publish:Post');
     }
-
 }
